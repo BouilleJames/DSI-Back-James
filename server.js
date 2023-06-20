@@ -125,6 +125,166 @@ app.delete("/user/:id", (req, res) => {
   });
 });
 
+app.get("/medias", (req, res) => {
+  const q = "SELECT * FROM medias";
+  db.query(q, (err, data) => {
+    if (err) return res.json(err);
+    return res.json(data);
+  });
+});
+
+app.post("/medias", (req, res) => {
+  const reference_media = req.body.reference_media;
+  const url = req.body.url;
+  if (!reference_media) {
+    res.status(400).json({ error: "La reference_media est obligatoire" });
+    return;
+  }
+  if (!url) {
+    res.status(400).json({ error: "L' url est obligatoire" });
+    return;
+  }
+
+  app.put("/medias/:id", (req, res) => {
+  const { reference_media, url } = req.body;
+  const id_media = req.params.id;
+  db.query(
+    "UPDATE medias SET reference_media = ?, url = ? WHERE id_media = ?",
+    [reference_media, url, id_media],
+    (error, data) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send("Erreur du serveur");
+      } else {
+        res.status(201).json({ message: "Média modifié avec succès" });
+      }
+    }
+  );
+});
+
+app.patch("/medias/:id/:value", (req, res) => {
+  const id_media = req.params.id;
+  let value = {};
+  if (req.params.value === "reference_media") {
+    value = req.body.reference_media;
+    reqSql = "UPDATE medias SET reference_media = ? WHERE id_media = ?";
+  } else if (req.params.value === "url") {
+    value = req.body.url;
+    reqSql = "UPDATE medias SET url = ? WHERE id_media = ?";
+  } else {
+    console.error("error");
+  }
+
+  app.delete("/medias/:id", (req, res) => {
+    const id = req.params.id;
+    db.query("DELETE FROM user WHERE user_id = ?", [id], (err, results) => {
+      if (err) throw err;
+      if (results.affectedRows === 0) {
+        res.status(404).send("média non trouvé");
+      } else {
+        res.status(200).json({ message: "média supprimé avec succès" });
+      }
+    });
+  });
+
+  db.query(
+    "INSERT INTO medias(reference_media, url) VALUES(?, ?)",
+    [reference_media, url],
+    (error, data) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send("Erreur du serveur");
+      } else {
+        res.status(201).json({ message: "Media créé avec succès" });
+      }
+    }
+  );
+});
+
+app.get("/articles", (req, res) => {
+  const q = "SELECT * FROM articles";
+  db.query(q, (err, data) => {
+    if (err) return res.json(err);
+    return res.json(data);
+  });
+});
+
+app.post("/articles", (req, res) => {
+  const titre = req.body.titre;
+  const content = req.body.content;
+  const date_publication = req.body.date_publication;
+  if (!titre) {
+    res.status(400).json({ error: "Le titre est obligatoire" });
+    return;
+  }
+  if (!content) {
+    res.status(400).json({ error: "Le contenu est obligatoire" });
+    return;
+  }
+  if (!date_publication) {
+    res.status(400).json({ error: "La date de publication est obligatoire" });
+    return;
+  }
+
+  app.put("/articles/:id", (req, res) => {
+  const { titre, content, date_publication } = req.body;
+  const id_article = req.params.id;
+  db.query(
+    "UPDATE articles SET titre = ?, content = ?, date_publication = ? WHERE id_article = ?",
+    [titre, content, date_publication, id_article],
+    (error, data) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send("Erreur du serveur");
+      } else {
+        res.status(201).json({ message: "Article modifié avec succès" });
+      }
+    }
+  );
+});
+
+app.patch("/Articles/:id/:value", (req, res) => {
+  const id_article = req.params.id;
+  let value = {};
+  if (req.params.value === "titre") {
+    value = req.body.titre;
+    reqSql = "UPDATE articles SET titre = ? WHERE id_article = ?";
+  } else if (req.params.value === "content") {
+    value = req.body.content;
+    reqSql = "UPDATE articles SET content = ? WHERE id_article = ?";
+  } else if (req.params.value === "date_publication") {
+    value = req.body.date_publication;
+    reqSql = "UPDATE articles SET date_publication = ? WHERE id_article = ?";
+    } else {
+    console.error("error");
+  }
+
+  app.delete("/articles/:id", (req, res) => {
+    const id = req.params.id;
+    db.query("DELETE FROM articles WHERE id_article = ?", [id], (err, results) => {
+      if (err) throw err;
+      if (results.affectedRows === 0) {
+        res.status(404).send("article non trouvé");
+      } else {
+        res.status(200).json({ message: "article supprimé avec succès" });
+      }
+    });
+  });
+
+  db.query(
+    "INSERT INTO articles(titre, content, date_publication) VALUES(?, ?)",
+    [titre, content, date_publication, id_article],
+    (error, data) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send("Erreur du serveur");
+      } else {
+        res.status(201).json({ message: "Article créé avec succès" });
+      }
+    }
+  );
+});
+
 app.listen(3004, () => {
   console.log("🎉Server is running on port 3004");
 });
